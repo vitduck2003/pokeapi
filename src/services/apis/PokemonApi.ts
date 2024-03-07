@@ -1,8 +1,8 @@
 import axios from "axios";
-import { DataPokemon } from "../../types/interface";
+import { DataPokemon, PaginationParams } from "../../types/interface";
 import { API_URL } from "../../constants/apiConstants";
-const getPokemonData = async () => {
-    const res = await axios.get(`${API_URL}?limit=28`);
+const getPokemonData = async (params: PaginationParams) => {
+  const res = await axios.get(`${API_URL}?limit=${params.limit}&offset=${params.offset}`);
     const dataPokemon: DataPokemon[] = [];
     for (const pokemon of res.data.results) {
         const poke = await axios.get(pokemon.url);

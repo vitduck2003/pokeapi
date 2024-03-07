@@ -61,3 +61,8 @@ export interface DetailProps {
 export interface ColorByType {
   [key: string]: string;
 }
+
+export interface PaginationParams {
+  limit: number;
+  offset: number;
+}

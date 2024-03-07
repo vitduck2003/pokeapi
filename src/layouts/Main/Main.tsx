@@ -7,7 +7,7 @@ interface MainProps{
 }
 export default function Main({ children }: MainProps): ReactElement {
     return (
-        <div className='container m-auto font-serif'>
+        <div className='container m-auto font-serif h-[100%]'>
             <Header />
             <main className="mx-auto">
                 {children}

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { AiOutlineSearch } from 'react-icons/ai';
 import getPokemonData from '../../services/apis/PokemonApi';
-import { DataPokemon, DetailProps } from '../../types/interface';
+import { DataPokemon, DetailProps, PaginationParams } from '../../types/interface';
 import { searchPokemonData } from '../../services/apis/PokemonSearch';
 import { CardListPokemon } from '../../components/CardListPokemon';
 import PokemonDetail from '../../components/PokemonDetail';
@@ -15,16 +15,23 @@ const Home: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [dataDetail, setDataDetail] = useState<DetailProps | null>();
+  const [limit, setLimit] = useState(28);
+  const [offset, setOffset] = useState(0);
+
   useEffect(() => {
     const fetchPokemonData = async () => {
-      const data = await getPokemonData();
+      const params: PaginationParams = {
+        limit,
+        offset,
+      };
+      const data = await getPokemonData(params);
       setPokemonData(data);
       setOriginalData(data);
       setLoading(false);
     };
 
     fetchPokemonData();
-  }, []);
+  }, [limit, offset]);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
@@ -49,10 +56,25 @@ const Home: React.FC = () => {
     }
     setShowModal(true);
   };
-  
-  const closeModal = async () => {
+
+  const closeModal = () => {
     setShowModal(false);
   };
+
+  const handleScroll = () => {
+    const isBottom = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 1;
+    if (isBottom) {
+      setLimit((prevLimit) => prevLimit + 20);
+      setOffset((prevOffset) => prevOffset + 10);
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
 
   return (
     <div className="bg-white mx-6">
@@ -81,7 +103,7 @@ const Home: React.FC = () => {
           <h1 className="text-center font-bold text-red-500">Khong tim thay con pokemon ban can </h1>
         )}
       </div>
-      {showModal && <PokemonDetail pokemon={dataDetail} closeModal={closeModal}  />}
+      {showModal && <PokemonDetail pokemon={dataDetail} closeModal={closeModal} />}
     </div>
   );
 };
